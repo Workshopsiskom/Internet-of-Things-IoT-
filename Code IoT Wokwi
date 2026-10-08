@@ -1,69 +1,130 @@
-#define BLYNK_TEMPLATE_ID "TMPL6wEeH7mvm"
-#define BLYNK_TEMPLATE_NAME "TES SECURITY"
-#define BLYNK_AUTH_TOKEN "-3znw2tthWqtzM1DRNFgz5aKbbYP8Wcr"
+#define BLYNK_TEMPLATE_ID "__________"
+#define BLYNK_TEMPLATE_NAME "__________"
+#define BLYNK_AUTH_TOKEN "___________________"
 
-#include <WiFi.h>
-#include <BlynkSimpleEsp32.h>
+#define BLYNK_PRINT Serial
 
-char ssid[] = "Wokwi-GUEST";
+// ===============================
+// 1. MASUKKAN LIBRARY
+// ===============================
+#include <__________.h>
+#include <______________________.h>
+
+// ===============================
+// 2. WIFI
+// ===============================
+char ssid[] = "________________";
 char pass[] = "";
- 
-#define PIR_PIN    13
-#define LED_PIN     2
-#define BUZZER_PIN 15
- 
-const long INTERVAL_NOTIF = 10000;
-bool lastState = LOW;
-unsigned long waktuNotif = 0;
+
+// ===============================
+// 3. PIN KOMPONEN
+// ===============================
+#define PIR_PIN     ______
+#define LED_PIN     ______
+#define BUZZER_PIN  ______
+
 BlynkTimer timer;
 
-void buzzerOn() {
-  ledcAttach(BUZZER_PIN, 2000, 8);
-  ledcWrite(BUZZER_PIN, 128);
-}
- 
-void buzzerOff() {
-  ledcWrite(BUZZER_PIN, 0);
-  ledcDetach(BUZZER_PIN);
-  digitalWrite(BUZZER_PIN, LOW);
-}
-void kirimNotifikasi(String pesan) {
-  if (millis() - waktuNotif >= INTERVAL_NOTIF) {
-    Blynk.logEvent("motion_alert", pesan);
-    waktuNotif = millis();
-  }
-}
+bool motionDetected = ______;
 
-if (motion != lastState) {
-    lastState = motion;
-    if (motion) {
-      digitalWrite(LED_PIN, HIGH);
-      buzzerOn();
-      Blynk.virtualWrite(V0, 1);
-      Blynk.virtualWrite(V1, "INTRUDER");
-      Blynk.virtualWrite(V2, 1);
-      kirimNotifikasi("Motion detected at your home!");
-    } else {
-      digitalWrite(LED_PIN, LOW);
-      buzzerOff();
-      Blynk.virtualWrite(V0, 0);
-      Blynk.virtualWrite(V1, "SAFE");
-      Blynk.virtualWrite(V2, 0);
+// ===============================
+// 4. FUNGSI CEK GERAKAN
+// ===============================
+void checkMotion()
+{
+  int motion = digitalRead(__________);
+
+  // =========================
+  // ADA GERAKAN
+  // =========================
+  if (motion == ______)
+  {
+    // Nyalakan LED
+    digitalWrite(__________, HIGH);
+
+    // Bunyikan buzzer
+    tone(__________, 1000);
+
+    // Kirim status ke Blynk
+    Blynk.virtualWrite(____, 1);
+
+    // Kirim event hanya sekali
+    if (!motionDetected)
+    {
+      Serial.println("================================");
+      Serial.println("GERAKAN TERDETEKSI!");
+      Serial.println("Mengirim event ke Blynk...");
+      Serial.println("================================");
+
+      Blynk.logEvent(
+        "________________",
+        "Motion detected at your home!"
+      );
+
+      motionDetected = ______;
     }
   }
-}
-void setup() {
-  Serial.begin(115200);
-  pinMode(PIR_PIN, INPUT);
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(BUZZER_PIN, OUTPUT);
-  digitalWrite(LED_PIN, LOW);
-  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
-  Blynk.logEvent("motion_alert", "Home Security System Activated");
-  timer.setInterval(200L, checkMotion);
+
+  // =========================
+  // TIDAK ADA GERAKAN
+  // =========================
+  else
+  {
+    // Matikan LED
+    digitalWrite(__________, LOW);
+
+    // Matikan buzzer
+    noTone(__________);
+
+    // Update status ke Blynk
+    Blynk.virtualWrite(____, 0);
+
+    motionDetected = ______;
+  }
 }
 
-void loop() {
-  Blynk.run();
-  timer.run();
+// ===============================
+// 5. SETUP
+// ===============================
+void setup()
+{
+  Serial.begin(__________);
+
+  // Atur mode pin
+  pinMode(__________, INPUT);
+  pinMode(__________, OUTPUT);
+  pinMode(__________, OUTPUT);
+
+  // Kondisi awal
+  digitalWrite(__________, LOW);
+  noTone(__________);
+
+  Serial.println();
+  Serial.println("================================");
+  Serial.println("     HOME SECURITY SYSTEM");
+  Serial.println("================================");
+
+  Serial.println("Connecting to WiFi...");
+
+  // Hubungkan ESP32 ke Blynk
+  Blynk.begin(
+    ____________________,
+    __________,
+    _________
+  );
+
+  Serial.println("Blynk connected!");
+  Serial.println("System ready.");
+
+  // Cek PIR setiap 100 ms
+  timer.setInterval(__________L, checkMotion);
+}
+
+// ===============================
+// 6. LOOP
+// ===============================
+void loop()
+{
+  __________.run();
+  __________.run();
 }
